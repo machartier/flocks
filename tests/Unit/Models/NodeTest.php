@@ -43,9 +43,9 @@ class NodeTest extends TestCase
         $nodeB->save();
 
         $tie = new Tie();
-        $tie->src = $nodeA->getKey();
-        $tie->dest = $nodeB->getKey();
-        $tie->ref = $nodeC->getKey();
+        $tie->src()->associate($nodeA);
+        $tie->dest()->associate($nodeB);
+        $tie->ref()->associate($nodeC);
 
         $tie->save();
 
@@ -54,9 +54,9 @@ class NodeTest extends TestCase
         $nodeD->save();
 
         $tie = new Tie();
-        $tie->src = $nodeA->getKey();
-        $tie->dest = $nodeB->getKey();
-        $tie->ref = $nodeD->getKey();
+        $tie->src()->associate($nodeA);
+        $tie->dest()->associate($nodeB);
+        $tie->ref()->associate($nodeD);
 
         $tie->save();
 
@@ -69,6 +69,11 @@ class NodeTest extends TestCase
         $childrenB = $nodeB->children;
         $this->assertCount(2, $childrenA);
         $this->assertCount(0, $childrenB);
+
+        $nodeA->addChild(Node::create(['data'=>'new child']), $nodeC);
+        $nodeA->refresh('children');
+        $this->assertCount(3, $nodeA->children);
+
 
     }
 }

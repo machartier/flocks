@@ -7,15 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class Tie
  * @package App\Models
- * @property int $src
- * @property int $dest
- * @property int $ref
+ * @property Node $src
+ * @property Node $dest
+ * @property Node $ref
+ * @property int $rank
  */
 class Tie extends Model
 {
-    const DEST_COLUMN = 'dest';
-    const SRC_COLUMN = 'src';
-    const REF_COLUMN = 'ref';
+    const DEST_COLUMN = 'dest_id';
+    const SRC_COLUMN = 'src_id';
+    const REF_COLUMN = 'ref_id';
     const TABLE = 'ties';
 
     public $incrementing = false;
