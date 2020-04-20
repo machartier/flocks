@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,7 +23,9 @@ class Node extends Model
      */
     public function parents()
     {
-        return $this->belongsToMany(Node::class, Tie::TABLE, Tie::DEST_COLUMN, Tie::SRC_COLUMN);
+        return $this->belongsToMany(Node::class, Tie::TABLE, Tie::DEST_COLUMN, Tie::SRC_COLUMN)
+            ->withPivot(Tie::REF_COLUMN, 'rank')
+            ->withTimestamps();
     }
 
     /**
@@ -30,24 +33,37 @@ class Node extends Model
      */
     public function children()
     {
-        return $this->belongsToMany(Node::class, Tie::TABLE, Tie::SRC_COLUMN, Tie::DEST_COLUMN);
+        return $this->belongsToMany(Node::class, Tie::TABLE, Tie::SRC_COLUMN, Tie::DEST_COLUMN)
+            ->withPivot(Tie::REF_COLUMN,'rank')
+            ->withTimestamps();
+    }
+
+    /**
+     * @param Node|null $ref
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function childrenRef(Node $ref = null)
+    {
+        return $this->children()->wherePivot(Tie::REF_COLUMN, $ref?$ref->getKey():0);
     }
 
     /**
      * @param Node $child
-     * @param Node $context
+     * @param Node|null $ref
      * @param int|null $rank
      */
-    public function addChild(Node $child, Node $context, int $rank = null)
+    public function addChild(Node $child, Node $ref = null, int $rank = null)
     {
-        $tie       = new Tie();
+        $tie = new Tie();
         $tie->src()->associate($this);
         $tie->dest()->associate($child);
 
-        if ($context) {
-            $tie->ref()->associate($context);
+        if ($ref) {
+            $tie->ref()->associate($ref);
+        }else{
+            $tie->setAttribute(Tie::REF_COLUMN,0);
         }
-        if($rank) {
+        if ($rank) {
             $tie->rank = $rank;
         }
         $tie->save();
