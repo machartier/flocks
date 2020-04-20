@@ -18,7 +18,7 @@ class CreateTiesTable extends Migration
 
             $table->foreignId(Tie::SRC_COLUMN);
             $table->foreignId(Tie::DEST_COLUMN);
-            $table->foreignId(Tie::REF_COLUMN)->nullable();
+            $table->foreignId(Tie::REF_COLUMN)->default(0);
             $table->integer('rank')->nullable();
             $table->timestamps();
 
@@ -26,7 +26,6 @@ class CreateTiesTable extends Migration
 
             $table->foreign(Tie::SRC_COLUMN)->references('id')->on('nodes');
             $table->foreign(Tie::DEST_COLUMN)->references('id')->on('nodes');
-            $table->foreign(Tie::REF_COLUMN)->references('id')->on('nodes');
 
         });
     }
